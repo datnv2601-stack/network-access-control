@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NAC Demo Dashboard</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header class="topbar">
+        <div>
+          <h1>NAC Controller</h1>
+          <p>Network Access Control - Quản lý truy cập IP trong LAN</p>
+        </div>
+        <button id="refreshBtn" class="primary-btn">Làm mới</button>
+      </header>
+
+      <section class="cards" id="summaryCards"></section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Thêm thiết bị mới</h2>
+        </div>
+        <form id="deviceForm" class="form-grid">
+          <input type="text" name="name" placeholder="Tên thiết bị" required />
+          <input type="text" name="ip" placeholder="IP" required />
+          <input type="text" name="mac" placeholder="MAC" required />
+          <input type="text" name="vlan" placeholder="VLAN" value="VLAN 10" />
+          <select name="role">
+            <option value="staff">Staff</option>
+            <option value="developer">Developer</option>
+            <option value="guest">Guest</option>
+            <option value="printer">Printer</option>
+            <option value="unknown">Unknown</option>
+          </select>
+          <select name="status">
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="blocked">Blocked</option>
+            <option value="quarantined">Quarantined</option>
+          </select>
+          <textarea name="notes" placeholder="Ghi chú"></textarea>
+          <button type="submit" class="primary-btn">Thêm thiết bị</button>
+        </form>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Danh sách thiết bị</h2>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Tên</th>
+                <th>IP</th>
+                <th>MAC</th>
+                <th>VLAN</th>
+                <th>Vai trò</th>
+                <th>Trạng thái</th>
+                <th>Hành động</th>
+              </tr>
+            </thead>
+            <tbody id="deviceTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Chính sách truy cập</h2>
+        </div>
+        <form id="policyForm" class="form-grid small-grid">
+          <input type="text" name="name" placeholder="Tên chính sách" required />
+          <select name="type">
+            <option value="allow">Allow</option>
+            <option value="restrict">Restrict</option>
+            <option value="block">Block</option>
+          </select>
+          <input type="text" name="condition" placeholder="Điều kiện (vd: 192.168.10.0/24)" required />
+          <input type="text" name="action" placeholder="Hành động (allow/restrict/quarantine)" required />
+          <textarea name="description" placeholder="Mô tả chính sách"></textarea>
+          <button type="submit" class="primary-btn">Thêm chính sách</button>
+        </form>
+        <div id="policyList" class="policy-list"></div>
+      </section>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

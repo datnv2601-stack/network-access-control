@@ -1,0 +1,132 @@
+const API = {
+  summary: '/api/summary',
+  devices: '/api/devices',
+  policies: '/api/policies',
+};
+
+async function fetchJson(url, options = {}) {
+  const response = await fetch(url, {
+    headers: { 'Content-Type': 'application/json' },
+    ...options,
+  });
+  return response.json();
+}
+
+function renderSummary(summary) {
+  const items = [
+    { label: 'Tổng thiết bị', value: summary.total, className: 'total' },
+    { label: 'Approved', value: summary.approved, className: 'approved' },
+    { label: 'Pending', value: summary.pending, className: 'pending' },
+    { label: 'Blocked', value: summary.blocked, className: 'blocked' },
+    { label: 'Quarantined', value: summary.quarantined, className: 'quarantined' },
+  ];
+
+  const container = document.getElementById('summaryCards');
+  container.innerHTML = items
+    .map(
+      (item) => `
+        <div class="card">
+          <div class="label">${item.label}</div>
+          <div class="value">${item.value}</div>
+        </div>
+      `,
+    )
+    .join('');
+}
+
+function renderDevices(devices) {
+  const body = document.getElementById('deviceTableBody');
+
+  body.innerHTML = devices
+    .map(
+      (device) => `
+        <tr>
+          <td>${device.name}</td>
+          <td>${device.ip}</td>
+          <td>${device.mac}</td>
+          <td>${device.vlan}</td>
+          <td>${device.role}</td>
+          <td>
+            <span class="status-badge status-${device.status}">${device.status}</span>
+          </td>
+          <td>
+            <button class="action-btn" data-id="${device.id}" data-status="approved">Approve</button>
+          </td>
+        </tr>
+      `,
+    )
+    .join('');
+
+  document.querySelectorAll('.action-btn').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const id = btn.getAttribute('data-id');
+      const status = btn.getAttribute('data-status');
+      await fetchJson(`/api/devices/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status }),
+      });
+      loadDashboard();
+    });
+  });
+}
+
+function renderPolicies(policies) {
+  const container = document.getElementById('policyList');
+  container.innerHTML = policies
+    .map(
+      (policy) => `
+        <div class="policy-item">
+          <strong>${policy.name}</strong>
+          <div>Type: ${policy.type}</div>
+          <div>Condition: ${policy.condition}</div>
+          <div>Action: ${policy.action}</div>
+          <div>${policy.description || 'Không có mô tả.'}</div>
+        </div>
+      `,
+    )
+    .join('');
+}
+
+async function loadDashboard() {
+  const [summary, devices, policies] = await Promise.all([
+    fetchJson(API.summary),
+    fetchJson(API.devices),
+    fetchJson(API.policies),
+  ]);
+
+  renderSummary(summary);
+  renderDevices(devices);
+  renderPolicies(policies);
+}
+
+document.getElementById('refreshBtn').addEventListener('click', loadDashboard);
+
+document.getElementById('deviceForm').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const form = new FormData(event.target);
+  const payload = Object.fromEntries(form.entries());
+
+  await fetchJson(API.devices, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+
+  event.target.reset();
+  loadDashboard();
+});
+
+document.getElementById('policyForm').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const form = new FormData(event.target);
+  const payload = Object.fromEntries(form.entries());
+
+  await fetchJson(API.policies, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+
+  event.target.reset();
+  loadDashboard();
+});
+
+loadDashboard();
