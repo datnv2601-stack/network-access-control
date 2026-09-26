@@ -1,10 +1,18 @@
 {
-  "name": "network-access-control-demo",
-  "version": "1.1.0",
+  "name": "nac-pro-complete",
+  "version": "2.0.0",
   "private": true,
-  "description": "NAC demo quản lý thiết bị, IP, MAC và policy trong LAN",
-  "main": "server.js",
-  "scripts": {"start": "node server.js", "dev": "nodemon server.js"},
-  "dependencies": {"express": "^4.19.2"},
-  "devDependencies": {"nodemon": "^3.1.4"}
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "scanner": "python3 scanner/arp_scanner.py"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "cors": "^2.8.5",
+    "body-parser": "^1.20.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
 }
